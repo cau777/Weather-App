@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--suppress HtmlUnknownTarget -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Weather App</title>
+    <!--    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">-->
+    <link href="/static/style.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon"/>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+
+<body>
+<header class="page-highlight">
+    <h5 class="time-display" id="display-time">Time</h5>
+    <img class="img-logo" src="/static/img/favicon.ico" alt="Logo">
+    <h1 class="title">Weather App</h1>
+</header>
+<section class="errors">
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <div class="alert alert-primary" role="alert">
+        {{message[0]}}
+    </div>
+    {% endif %}
+    {% endwith %}
+</section>
+<section class="cards-section">
+    <div class="cards row row-cols-md-6">
+
+        {% for city_name, city_data in weather.items() %}
+        <div class="card col">
+            <div class="city card-header card-text">
+                <span>{{ city_name|e }} ({{ city_data['country']|e }})</span>
+            </div>
+
+            <div class="card-img-container">
+                <img class="card-img" src="{{ city_data['img'] }}" alt="Should be an image of {{ city_name|e }}">
+            </div>
+            <div class="card-body">
+                <div class="degrees card-header card-text">
+                    <span>{{ city_data['temp'] }}° C</span>
+                </div>
+
+                <div class="state card-text">
+                    <span>{{ city_data['status'] }}</span>
+                </div>
+
+                <p class="card-text description-text">{{ city_data['description'] }}</p>
+                <div class="additional-info-menu">
+                    <p class="card-text additional-info-text">Feels like: {{ city_data['feels_like'] }}° C</p>
+                    <p class="card-text additional-info-text">Min. temperature: {{ city_data['temp_min'] }}° C</p>
+                    <p class="card-text additional-info-text">Max. temperature: {{ city_data['temp_max'] }}° C</p>
+                    <p class="card-text additional-info-text">Pressure: {{ city_data['pressure'] }} mBar</p>
+                    <p class="card-text additional-info-text">Humidity: {{ city_data['humidity'] }}%</p>
+                </div>
+
+                <form action="/delete/{{ city_name|e }}" method="post">
+                    <button type="submit" class="delete-button btn-close"></button>
+                </form>
+
+                <p class="card-text text-expand-card">More Info</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Filler -->
+<div style="width: 100%; height: 15vh"></div>
+
+<footer class="page-highlight">
+    <section class="form">
+        <form class="input-group" action="/" method="post">
+            <label for="input-city"></label>
+            <input class="input-group-text" type="text" placeholder="Enter a city name" name="city_name"
+                   id="input-city">
+            <button type="submit" class="submit-button">Add</button>
+        </form>
+    </section>
+</footer>
+</body>
+
+<script>
+    const interval = setInterval(function () {
+        const date = new Date();
+        let year = date.getFullYear();
+        let month = date.getMonth();
+        let day = date.getDay();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+        if (hours < 10) hours = "0" + hours;
+        if (minutes < 10) minutes = "0" + minutes;
+        if (seconds < 10) seconds = "0" + seconds;
+
+        document.getElementById("display-time").innerHTML = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }, 1000);
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.additional-info-menu').toggle();
+
+        $(".text-expand-card").click(function () {
+            $(this).prev().prev().fadeToggle(200, "swing", function () {
+            });
+            const prevText = $(this).text();
+            //console.log(prevText);
+            $(this).text(prevText === "More Info" ? "Less Info" : "More Info");
+        });
+    });
+</script>
+
+<script>
+    const intervalFadeError = setInterval(function () {
+        $('.alert-primary').fadeToggle(300, 'swing', function () {
+        })
+        clearInterval(intervalFadeError);
+    }, 5000);
+</script>
+
+</html>
