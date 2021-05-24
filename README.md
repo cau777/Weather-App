@@ -8,3 +8,5 @@
 - Automatic web scrapping to find pictures of the cities
 - Simple error messages
 - Interactive page made with HTML, CSS, JavaScript and JQuery
+
+![Screenshot of the program](https://github.com/cau777/Weather-App/blob/main/Screenshot.png)
